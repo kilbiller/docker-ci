@@ -19,6 +19,6 @@
     * xml
     * bcmath
     * intl
-  * Composer
+  * Composer (latest)
   * Node.js 8.x
   * Yarn v1.0.1
