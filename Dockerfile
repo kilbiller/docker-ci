@@ -63,10 +63,10 @@ RUN command -v npm
 
 # Yarn
 RUN cd /opt \
-  && wget https://yarnpkg.com/downloads/1.0.1/yarn-v1.0.1.tar.gz \
-  && tar zvxf yarn-v1.0.1.tar.gz
+  && wget https://yarnpkg.com/downloads/1.0.2/yarn-v1.0.2.tar.gz \
+  && tar zvxf yarn-v1.0.2.tar.gz
 
-ENV PATH=/opt/yarn-v1.0.1/bin/:$PATH
+ENV PATH=/opt/yarn-v1.0.2/bin/:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Other
