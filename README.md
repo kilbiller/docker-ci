@@ -21,4 +21,4 @@
     * intl
   * Composer (latest)
   * Node.js 8.x
-  * Yarn v1.0.2
+  * Yarn v1.2.1

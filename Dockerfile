@@ -24,7 +24,7 @@ RUN apt-get install -y \
 
 RUN wget -q -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb \
   && dpkg -i /tmp/libpng12.deb \
-  && rm /tmp/libpng12.deb    
+  && rm /tmp/libpng12.deb
 
 # PHP
 RUN LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php
@@ -63,10 +63,10 @@ RUN command -v npm
 
 # Yarn
 RUN cd /opt \
-  && wget https://yarnpkg.com/downloads/1.0.2/yarn-v1.0.2.tar.gz \
-  && tar zvxf yarn-v1.0.2.tar.gz
+  && wget https://yarnpkg.com/downloads/1.2.1/yarn-v1.2.1.tar.gz \
+  && tar zvxf yarn-v1.2.1.tar.gz
 
-ENV PATH=/opt/yarn-v1.0.2/bin/:$PATH
+ENV PATH=/opt/yarn-v1.2.1/bin/:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Other
