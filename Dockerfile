@@ -58,10 +58,10 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x -o nodesource_setup.sh && \
 
 # Yarn
 RUN cd /opt \
-	&& wget https://yarnpkg.com/downloads/1.3.2/yarn-v1.3.2.tar.gz \
-	&& tar zvxf yarn-v1.3.2.tar.gz
+	&& wget https://yarnpkg.com/downloads/1.5.1/yarn-v1.5.1.tar.gz \
+	&& tar zvxf yarn-v1.5.1.tar.gz
 
-ENV PATH=/opt/yarn-v1.3.2/bin/:$PATH
+ENV PATH=/opt/yarn-v1.5.1/bin/:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Other
