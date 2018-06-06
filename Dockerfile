@@ -28,17 +28,17 @@ RUN wget -q -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp
 # PHP
 RUN LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php
 RUN apt-get update && apt-get install -y --allow-unauthenticated \
-	php7.1 \
-	php7.1-curl \
-	php7.1-gd \
-	php7.1-dev \
-	php7.1-xml \
-	php7.1-bcmath \
-	php7.1-mysql \
-	php7.1-mbstring \
-	php7.1-zip \
-	php7.1-json \
-	php7.1-intl \
+	php7.2 \
+	php7.2-curl \
+	php7.2-gd \
+	php7.2-dev \
+	php7.2-xml \
+	php7.2-bcmath \
+	php7.2-mysql \
+	php7.2-mbstring \
+	php7.2-zip \
+	php7.2-json \
+	php7.2-intl \
 	php-xdebug
 RUN command -v php
 
@@ -58,10 +58,10 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x -o nodesource_setup.sh && \
 
 # Yarn
 RUN cd /opt \
-	&& wget https://yarnpkg.com/downloads/1.5.1/yarn-v1.5.1.tar.gz \
-	&& tar zvxf yarn-v1.5.1.tar.gz
+	&& wget https://yarnpkg.com/downloads/1.7.0/yarn-v1.7.0.tar.gz \
+	&& tar zvxf yarn-v1.7.0.tar.gz
 
-ENV PATH=/opt/yarn-v1.5.1/bin/:$PATH
+ENV PATH=/opt/yarn-v1.7.0/bin/:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Other
