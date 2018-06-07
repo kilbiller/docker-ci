@@ -40,7 +40,21 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated \
 	php7.2-json \
 	php7.2-intl \
 	php-xdebug
-RUN command -v php
+
+# Install php-ast extension (for phan)
+RUN curl -fsSL 'https://github.com/nikic/php-ast/archive/v0.1.6.tar.gz' -o php-ast.tar.gz \
+	&& mkdir -p php-ast \
+	&& tar -xzf php-ast.tar.gz -C php-ast --strip-components=1 \
+	&& rm php-ast.tar.gz \
+	&& ( \
+	cd php-ast \
+	&& phpize \
+	&& ./configure \
+	&& make -j"$(getconf _NPROCESSORS_ONLN)" \
+	&& make install \
+	) \
+	&& rm -r php-ast \
+	&& echo -e 'extension=ast.so' > /etc/php/7.2/cli/conf.d/30-ast.ini
 
 # Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
@@ -63,6 +77,3 @@ RUN cd /opt \
 
 ENV PATH=/opt/yarn-v1.7.0/bin/:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER=1
-
-# Other
-RUN mkdir ~/.ssh && touch ~/.ssh_config
