@@ -25,3 +25,4 @@
 - Composer (latest)
 - Node.js 8.x
 - Yarn v1.7.0
+- aws-cli

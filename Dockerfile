@@ -26,8 +26,9 @@ RUN wget -q -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp
 	&& rm /tmp/libpng12.deb
 
 # PHP
-RUN LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php
-RUN apt-get update && apt-get install -y --allow-unauthenticated \
+RUN LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php \
+	&& apt-get update \
+	&& apt-get install -y \
 	php7.2 \
 	php7.2-curl \
 	php7.2-gd \
@@ -74,6 +75,11 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x -o nodesource_setup.sh && \
 RUN cd /opt \
 	&& wget https://yarnpkg.com/downloads/1.7.0/yarn-v1.7.0.tar.gz \
 	&& tar zvxf yarn-v1.7.0.tar.gz
+
+# aws-cli
+RUN apt-get update \
+	&& apt-get install -y python-pip \
+	&& pip install awscli --upgrade --user
 
 ENV PATH=/opt/yarn-v1.7.0/bin/:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER=1
