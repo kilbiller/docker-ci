@@ -79,7 +79,17 @@ RUN cd /opt \
 # aws-cli
 RUN apt-get update \
 	&& apt-get install -y python-pip \
-	&& pip install awscli --upgrade --user
+	&& pip install awscli --upgrade --user \
+	&& ln -s /root/.local/bin/aws /usr/local/bin/aws
+
+# docker
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
+	&& add-apt-repository \
+	"deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+	$(lsb_release -cs) \
+	stable" \
+	&& apt-get update \
+	&& apt-get install -y docker-ce
 
 ENV PATH=/opt/yarn-v1.7.0/bin/:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER=1
