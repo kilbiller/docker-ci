@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 RUN export LC_ALL=C.UTF-8
 RUN DEBIAN_FRONTEND=noninteractive
@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y \
 	build-essential \
 	apt-utils \
 	software-properties-common \
-	python-software-properties \
 	nasm \
 	libjpeg-dev \
 	libpng-dev
@@ -25,25 +24,30 @@ RUN wget -q -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp
 	&& dpkg -i /tmp/libpng12.deb \
 	&& rm /tmp/libpng12.deb
 
+RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime \
+	&& export DEBIAN_FRONTEND=noninteractive \
+	&& apt-get install -y tzdata \
+	&& dpkg-reconfigure --frontend noninteractive tzdata
+
 # PHP
-RUN LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php \
+RUN add-apt-repository ppa:ondrej/php \
 	&& apt-get update \
 	&& apt-get install -y \
-	php7.2 \
-	php7.2-curl \
-	php7.2-gd \
-	php7.2-dev \
-	php7.2-xml \
-	php7.2-bcmath \
-	php7.2-mysql \
-	php7.2-mbstring \
-	php7.2-zip \
-	php7.2-json \
-	php7.2-intl \
+	php7.3 \
+	php7.3-curl \
+	php7.3-gd \
+	php7.3-dev \
+	php7.3-xml \
+	php7.3-bcmath \
+	php7.3-mysql \
+	php7.3-mbstring \
+	php7.3-zip \
+	php7.3-json \
+	php7.3-intl \
 	php-xdebug
 
 # Install php-ast extension (for phan)
-RUN curl -fsSL 'https://github.com/nikic/php-ast/archive/v0.1.6.tar.gz' -o php-ast.tar.gz \
+RUN curl -fsSL 'https://github.com/nikic/php-ast/archive/v1.0.1.tar.gz' -o php-ast.tar.gz \
 	&& mkdir -p php-ast \
 	&& tar -xzf php-ast.tar.gz -C php-ast --strip-components=1 \
 	&& rm php-ast.tar.gz \
@@ -55,7 +59,7 @@ RUN curl -fsSL 'https://github.com/nikic/php-ast/archive/v0.1.6.tar.gz' -o php-a
 	&& make install \
 	) \
 	&& rm -r php-ast \
-	&& echo -e 'extension=ast.so' > /etc/php/7.2/cli/conf.d/30-ast.ini
+	&& echo -e 'extension=ast.so' > /etc/php/7.3/cli/conf.d/30-ast.ini
 
 # Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
@@ -67,14 +71,14 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
 RUN command -v composer
 
 # Node.js
-RUN curl -sL https://deb.nodesource.com/setup_8.x -o nodesource_setup.sh && \
+RUN curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh && \
 	bash nodesource_setup.sh && \
 	apt-get install nodejs -y
 
 # Yarn
 RUN cd /opt \
-	&& wget https://yarnpkg.com/downloads/1.7.0/yarn-v1.7.0.tar.gz \
-	&& tar zvxf yarn-v1.7.0.tar.gz
+	&& wget https://yarnpkg.com/downloads/1.17.0/yarn-v1.17.0.tar.gz \
+	&& tar zvxf yarn-v1.17.0.tar.gz
 
 # aws-cli
 RUN apt-get update \
@@ -91,5 +95,5 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
 	&& apt-get update \
 	&& apt-get install -y docker-ce
 
-ENV PATH=/opt/yarn-v1.7.0/bin/:$PATH
+ENV PATH=/opt/yarn-v1.17.0/bin/:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER=1
