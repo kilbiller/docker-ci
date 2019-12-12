@@ -6,11 +6,14 @@
 
 ## Installed packages
 
+- git
 - ssh
-- openssh-client
+- tar
+- gzip
+- ca-certificates
 - curl
 - wget
-- PHP 7.2
+- PHP 7.3
   - MySQL
   - sqlite
   - Xdebug
@@ -22,8 +25,8 @@
   - bcmath
   - intl
   - ast
-- Composer (latest)
-- Node.js 8.x
-- Yarn v1.7.0
+- Composer
+- Node.js 12.x
+- Yarn
 - aws-cli
 - docker
