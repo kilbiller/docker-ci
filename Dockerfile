@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
 	git \
 	ssh \
 	tar \
+	unzip \
 	gzip
 
 # PHP
@@ -44,6 +45,7 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash \
 
 # Yarn
 RUN curl -o- -L https://yarnpkg.com/install.sh | bash
+ENV PATH="/root/.yarn/bin:/root/.config/yarn/global/node_modules/.bin:$PATH"
 
 # aws-cli
 RUN apt-get update \
