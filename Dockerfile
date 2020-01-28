@@ -1,63 +1,69 @@
-FROM ubuntu:18.04
+FROM php:7.4-cli
 
-RUN apt-get update && apt-get install -y \
-	software-properties-common \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install --no-install-recommends -y \
+	apt-transport-https \
+	ca-certificates \
 	curl \
 	git \
+	gnupg-agent \
+	gzip \
+	jq \
+	python-pip \
+	python-setuptools \
+	software-properties-common \
 	ssh \
+	sudo \
 	tar \
-	unzip \
-	gzip
-
-# PHP
-RUN add-apt-repository ppa:ondrej/php \
-	&& DEBIAN_FRONTEND=noninteractive apt-get install -y \
-	php7.3 \
-	php7.3-dev \
-	php7.3-curl \
-	php7.3-gd \
-	php7.3-xml \
-	php7.3-bcmath \
-	php7.3-mysql \
-	php7.3-mbstring \
-	php7.3-zip \
-	php7.3-json \
-	php7.3-intl
+	unzip
 
 # Install xdebug
 RUN pecl install xdebug \
-	&& echo 'zend_extension=xdebug.so' > /etc/php/7.3/cli/conf.d/30-xdebug.ini
+	&& echo 'zend_extension=xdebug.so' > "$PHP_INI_DIR/conf.d/30-xdebug.ini"
 
 # Install php-ast extension (for phan)
 RUN pecl install ast \
-	&& echo 'extension=ast.so' > /etc/php/7.3/cli/conf.d/30-ast.ini
-
-# Composer
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_HOME /tmp
-ENV COMPOSER_VERSION 1.9.1
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=${COMPOSER_VERSION}
-RUN command -v composer
+	&& echo 'extension=ast.so' > "$PHP_INI_DIR/conf.d/30-ast.ini"
 
 # Node.js
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash \
-	&& apt-get install nodejs -y
-
-# Yarn
-RUN curl -o- -L https://yarnpkg.com/install.sh | bash
-ENV PATH="/root/.yarn/bin:/root/.config/yarn/global/node_modules/.bin:$PATH"
-
-# aws-cli
-RUN apt-get update \
-	&& apt-get install -y python-pip \
-	&& pip install awscli --upgrade --user \
-	&& ln -s /root/.local/bin/aws /usr/local/bin/aws
+	&& apt-get install --no-install-recommends -y nodejs
 
 # docker
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
-	&& add-apt-repository \
-	"deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-	$(lsb_release -cs) \
-	stable" \
-	&& apt-get update \
-	&& apt-get install -y docker-ce
+RUN set -ex \
+	&& export DOCKER_VERSION=$(curl --silent --fail --retry 3 https://download.docker.com/linux/static/stable/x86_64/ | grep -o -e 'docker-[.0-9]*\.tgz' | sort -r | head -n 1) \
+	&& DOCKER_URL="https://download.docker.com/linux/static/stable/x86_64/${DOCKER_VERSION}" \
+	&& echo "Docker URL: $DOCKER_URL" \
+	&& curl --silent --show-error --location --fail --retry 3 --output /tmp/docker.tgz "${DOCKER_URL}" \
+	&& ls -lha /tmp/docker.tgz \
+	&& tar -xz -C /tmp -f /tmp/docker.tgz \
+	&& mv /tmp/docker/* /usr/bin \
+	&& rm -rf /tmp/docker /tmp/docker.tgz \
+	&& which docker \
+	&& (docker version || true)
+
+# Add circleci user
+RUN groupadd --gid 3434 circleci \
+	&& useradd --uid 3434 --gid circleci --shell /bin/bash --create-home circleci \
+	&& echo 'circleci ALL=NOPASSWD: ALL' >> /etc/sudoers.d/50-circleci \
+	&& echo 'Defaults    env_keep += "DEBIAN_FRONTEND"' >> /etc/sudoers.d/env_keep
+
+USER circleci
+
+ENV PATH="/home/circleci/.local/bin:$PATH"
+
+# Composer
+ENV COMPOSER_HOME /tmp
+ENV COMPOSER_VERSION 1.9.1
+RUN mkdir -p "$HOME/.local/bin" \
+	&& curl -sS https://getcomposer.org/installer | php -- --install-dir="$HOME/.local/bin" --filename=composer --version=${COMPOSER_VERSION}
+RUN composer --version
+
+# Yarn
+ENV YARN_VERSION 1.21.1
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
+ENV PATH="/home/circleci/.yarn/bin:/home/circleci/.config/yarn/global/node_modules/.bin:$PATH"
+
+# aws-cli
+RUN pip install awscli --upgrade --user
